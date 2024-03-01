@@ -28,6 +28,10 @@ object App : CliktCommand() {
         .help("Migrate releases to new tag format. Has no effect if the new tags don't exist yet.")
         .flag()
 
+    private val createNewTags by option("--create-tags", "--retag-tags")
+        .help("Create new tags using the new format.")
+        .flag()
+
     private val repoArg by argument("repository")
         .help("""Repository URI. Defaults to "$DEFAULT_REPO".""")
         .optional()
@@ -55,6 +59,15 @@ object App : CliktCommand() {
     val tags by lazy { repo.listTags().associateBy { it.name } }
 
     override fun run() {
+        if (createNewTags) {
+            println("Creating new format tags")
+            // TODO consider using GH API to checkout?
+            val git = GitUtil.clone(repoArg ?: DEFAULT_REPO)
+            releases.values.forEach { release ->
+                git.createNewFormatTag(release)
+            }
+            println("Done")
+        }
         if (migrateReleases) {
             println("Migrating releases to the new format")
             releases.values.forEach { release ->
