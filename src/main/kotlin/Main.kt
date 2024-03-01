@@ -26,6 +26,10 @@ object App : CliktCommand() {
         .help("Don't make any write requests")
         .flag()
 
+    private val all by option("-a", "--all")
+        .help("Run all actions")
+        .flag()
+
     private val migrateReleases by option("--migrate-releases", "--retag-releases")
         .help("Migrate releases to new tag format. Has no effect if the new tags don't exist yet.")
         .flag()
@@ -71,7 +75,7 @@ object App : CliktCommand() {
     val git by lazy { GitUtil.clone(repoArg ?: DEFAULT_REPO) }
 
     override fun run() {
-        if (createNewTags) {
+        if (all || createNewTags) {
             println("Creating new format tags")
             // TODO consider using GH API to checkout?
             releases.values.forEach { release ->
@@ -79,7 +83,7 @@ object App : CliktCommand() {
             }
             println("Done")
         }
-        if (pushTags) {
+        if (all || pushTags) {
             println("Pushing local tags")
             git.push()
                 .setDryRun(dryrun)
@@ -87,7 +91,7 @@ object App : CliktCommand() {
                 .call()
             println("Done")
         }
-        if (migrateReleases) {
+        if (all || migrateReleases) {
             println("Migrating releases to the new format")
             releases.values.forEach { release ->
                 GitHubUtil.migrateReleaseTags(release)
@@ -95,7 +99,7 @@ object App : CliktCommand() {
             println("Done")
             println()
         }
-        if (deleteTags) {
+        if (all || deleteTags) {
             println("Deleting tags on remote")
             val old = git.listOldTags()
 
