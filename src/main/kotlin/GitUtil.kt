@@ -17,6 +17,7 @@ object GitUtil {
     fun clone(uri: String): Git {
         val git = cloneOrOpen(uri)
         git.fetch()
+            .setCredentialsProvider(App.gitCred)
             .setRemoveDeletedRefs(true)
             .setTagOpt(FETCH_TAGS)
             .call()
@@ -37,6 +38,7 @@ object GitUtil {
         }
 
         return Git.cloneRepository()
+            .setCredentialsProvider(App.gitCred)
             .setURI(uri)
             .setGitDir(repoDir)
             .setCloneAllBranches(true)

@@ -7,8 +7,9 @@ import com.github.ajalt.clikt.parameters.arguments.optional
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
+import org.eclipse.jgit.transport.CredentialsProvider
 import org.eclipse.jgit.transport.RefSpec
-import org.eclipse.jgit.transport.TagOpt
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import org.kohsuke.github.GitHubBuilder
 import java.lang.Thread.sleep
 
@@ -74,6 +75,15 @@ object App : CliktCommand() {
 
     val git by lazy { GitUtil.clone(repoArg ?: DEFAULT_REPO) }
 
+    val gitCred: CredentialsProvider by lazy {
+        // TODO check if this can be owner or must be actual email/username/whatever
+        val owner = (repoArg ?: DEFAULT_REPO)
+            .split("[:/]".toRegex())
+            .dropLast(1)
+            .last()
+        UsernamePasswordCredentialsProvider(owner, token)
+    }
+
     override fun run() {
         if (all || createNewTags) {
             println("Creating new format tags")
@@ -87,6 +97,7 @@ object App : CliktCommand() {
             println("Pushing local tags")
             git.push()
                 .setDryRun(dryrun)
+                .setCredentialsProvider(gitCred)
                 .setPushTags()
                 .call()
             println("Done")
@@ -125,6 +136,7 @@ object App : CliktCommand() {
             if (!quit) {
                 git.push()
                     .setDryRun(dryrun)
+                    .setCredentialsProvider(gitCred)
                     .setRefSpecs(old.map {
                         // null source will delete
                         RefSpec().setSource(null).setDestination(it.name)
