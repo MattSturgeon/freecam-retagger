@@ -7,6 +7,8 @@ import com.github.ajalt.clikt.parameters.arguments.optional
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
+import org.eclipse.jgit.transport.RefSpec
+import org.eclipse.jgit.transport.TagOpt
 import org.kohsuke.github.GitHubBuilder
 import java.lang.Thread.sleep
 
@@ -30,6 +32,14 @@ object App : CliktCommand() {
 
     private val createNewTags by option("--create-tags", "--retag-tags")
         .help("Create new tags using the new format.")
+        .flag()
+
+    private val pushTags by option("--push-tags")
+        .help("Pushes local tags to the remote.")
+        .flag()
+
+    private val deleteTags by option("--delete-old-tags")
+        .help("Deletes \"old\" format tags from the remote.")
         .flag()
 
     private val repoArg by argument("repository")
@@ -58,14 +68,23 @@ object App : CliktCommand() {
 
     val tags by lazy { repo.listTags().associateBy { it.name } }
 
+    val git by lazy { GitUtil.clone(repoArg ?: DEFAULT_REPO) }
+
     override fun run() {
         if (createNewTags) {
             println("Creating new format tags")
             // TODO consider using GH API to checkout?
-            val git = GitUtil.clone(repoArg ?: DEFAULT_REPO)
             releases.values.forEach { release ->
                 git.createNewFormatTag(release)
             }
+            println("Done")
+        }
+        if (pushTags) {
+            println("Pushing local tags")
+            git.push()
+                .setDryRun(dryrun)
+                .setPushTags()
+                .call()
             println("Done")
         }
         if (migrateReleases) {
@@ -75,6 +94,40 @@ object App : CliktCommand() {
             }
             println("Done")
             println()
+        }
+        if (deleteTags) {
+            println("Deleting tags on remote")
+            val old = git.listOldTags()
+
+            // Warn
+            println("Will delete ${old.size} tags: ")
+            old.forEach { println("  - ${it.name}") }
+
+            // Prompt for confirmation
+            val quit: Boolean
+            while (true) {
+                println("Continue? [y/N]:")
+                val answer = readlnOrNull()?.lowercase()
+                if (answer.isNullOrEmpty() || answer == "n" || answer == "no") {
+                    quit = true
+                    break
+                }
+                if (answer == "y" || answer == "yes") {
+                    quit = false
+                    break
+                }
+            }
+
+            if (!quit) {
+                git.push()
+                    .setDryRun(dryrun)
+                    .setRefSpecs(old.map {
+                        // null source will delete
+                        RefSpec().setSource(null).setDestination(it.name)
+                    })
+                    .call()
+                println("Done")
+            }
         }
     }
 

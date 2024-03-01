@@ -162,3 +162,6 @@ fun Git.createNewFormatTag(release: GHRelease) {
         }.call()
     }
 }
+
+fun Git.listOldTags() = tagList().call().filter { Versions.isOldFormat(it.name.substringAfterLast('/')) }
+fun Git.listOldTagNames() = listOldTags().map { it.name.substringAfterLast('/') }
