@@ -1,10 +1,13 @@
 package dev.mattsturgeon
 
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.parameters.arguments.*
+import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.help
+import com.github.ajalt.clikt.parameters.arguments.optional
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
+import org.kohsuke.github.GitHubBuilder
 import java.lang.Thread.sleep
 
 fun main(args: Array<String>) {
@@ -21,21 +24,45 @@ object App : CliktCommand() {
         .help("Don't make any write requests")
         .flag()
 
+    private val migrateReleases by option("--migrate-releases", "--retag-releases")
+        .help("Migrate releases to new tag format. Has no effect if the new tags don't exist yet.")
+        .flag()
+
     private val repoArg by argument("repository")
         .help("""Repository URI. Defaults to "$DEFAULT_REPO".""")
         .optional()
-        .validate { path ->
-            val count = path.count { it == '/' }
-            if (count != 1) {
-                fail("Repository name must be in format owner/repo")
-            }
-        }
 
-    private val repo by lazy { repoArg ?: DEFAULT_REPO }
-    private val owner by lazy { repo.split("[:/]".toRegex()).dropLast(1).last() }
+    val github by lazy {
+        val owner = (repoArg ?: DEFAULT_REPO)
+            .split("[:/]".toRegex())
+            .dropLast(1)
+            .last()
+
+        GitHubBuilder()
+            .withOAuthToken(token, owner)
+            .build()
+    }
+
+    val repo by lazy {
+        val parts = (repoArg ?: DEFAULT_REPO).split("[:/]".toRegex())
+        assert(parts.size > 1)
+        val slug = parts.subList(parts.size - 2, parts.size).joinToString("/").removeSuffix(".git")
+        github.getRepository(slug)
+    }
+
+    val releases by lazy { repo.listReleases().associateBy { it.tagName } }
+
+    val tags by lazy { repo.listTags().associateBy { it.name } }
 
     override fun run() {
-
+        if (migrateReleases) {
+            println("Migrating releases to the new format")
+            releases.values.forEach { release ->
+                GitHubUtil.migrateReleaseTags(release)
+            }
+            println("Done")
+            println()
+        }
     }
 
     /**
