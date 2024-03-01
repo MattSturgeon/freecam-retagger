@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.clikt)
     implementation(libs.json)
     implementation(libs.jgit)
+    compileOnly(libs.jgitCli)// JGit CLI for reference
     implementation(libs.github)
     testImplementation(libs.ktest)
 }

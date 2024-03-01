@@ -10,6 +10,7 @@ github = "1.319"
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "json" }
 jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgit" }
+jgitCli = { module = "org.eclipse.jgit:org.eclipse.jgit.pgm", version.ref = "jgit" }
 github = { module = "org.kohsuke:github-api", version.ref = "github" }
 
 ktest = { module = "org.jetbrains.kotlin:kotlin-test" }
