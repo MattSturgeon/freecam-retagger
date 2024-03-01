@@ -11,6 +11,7 @@ import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.transport.TagOpt.FETCH_TAGS
 import org.kohsuke.github.GHRelease
 import java.io.File
+import java.text.SimpleDateFormat
 
 object GitUtil {
 
@@ -163,6 +164,35 @@ fun Git.createNewFormatTag(release: GHRelease) {
             setForceUpdate(true) // Overwrite (if run multiple times)
         }.call()
     }
+}
+
+fun Git.genUpdateReleaseCommands(release: GHRelease, prefix: String): String {
+    return listOf(
+        """gh release edit ${release.tagName} --tag=$prefix${Versions.stripSuffix(release.tagName)} --verify-tag""",
+        "&&",
+        "sleep 1s",
+    ).joinToString(" ")
+}
+
+fun Git.genDeleteTagCommands(release: GHRelease, remote: Boolean): List<String> {
+    return getAllTags(release.tagName).map { it.name }.filter(Versions::isOldFormat).map { tag ->
+        if (remote) {
+            """git push -d origin $tag"""
+        } else {
+            """git tag -d $tag"""
+        }
+    }
+}
+
+fun Git.genNewTagCommand(release: GHRelease, sign: Boolean): String {
+    val fmt = SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    val commit = getCommit(release.tagName)!!
+    val version = Versions.stripSuffix(release.tagName)
+    val message = "Version $version"
+    val date = fmt.format(release.createdAt)
+
+    return """GIT_COMMITTER_DATE="$date" git tag -a${if (sign) " -s" else ""} -m "$message" v$version ${commit.name}"""
 }
 
 fun Git.listOldTags() = tagList().call().filter { Versions.isOldFormat(it.name.substringAfterLast('/')) }

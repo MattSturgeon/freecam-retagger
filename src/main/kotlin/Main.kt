@@ -11,6 +11,7 @@ import org.eclipse.jgit.transport.CredentialsProvider
 import org.eclipse.jgit.transport.RefSpec
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import org.kohsuke.github.GitHubBuilder
+import java.io.File
 import java.lang.Thread.sleep
 
 fun main(args: Array<String>) {
@@ -26,6 +27,10 @@ object App : CliktCommand() {
     private val dryrun by option("--dry-run")
         .help("Don't make any write requests")
         .flag()
+
+//    private val genTagCommands by option("--gen-tag-commands")
+//        .help("Alternative to --create-tags, this will print commands that can be used with git CLI")
+//        .flag()
 
     private val all by option("-a", "--all")
         .help("Run all actions")
@@ -85,6 +90,20 @@ object App : CliktCommand() {
     }
 
     override fun run() {
+//        if (genTagCommands) {
+//            listOf("v", "").forEach { prefix ->
+//                val file = File("update_release_tags_$prefix.sh")
+//                file.printWriter().use { out ->
+//                    out.println("#!/usr/bin/env sh")
+//                    out.println("echo \"Updating release tags ${if (prefix.isNotEmpty()) "(with prefix)" else ""}\"")
+//                    releases.values.map { release ->
+//                        git.genUpdateReleaseCommands(release, prefix)
+//                    }.forEach(out::println)
+//                    out.println("echo \"Done\"")
+//                }
+//            }
+//            return
+//        }
         if (all || createNewTags) {
             println("Creating new format tags")
             // TODO consider using GH API to checkout?
