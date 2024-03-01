@@ -17,4 +17,14 @@ object Versions {
             tag to version
         }
     }
+
+    /**
+     * Remove the suffix part of an old-format tag
+     */
+    fun stripSuffix(tag: String) = tag.substringBefore('-')
+
+    /**
+     * Identify old vs new format tags
+     */
+    fun isOldFormat(tag: String) = "" != tag.substringAfter('-', "")
 }

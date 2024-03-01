@@ -1,7 +1,10 @@
 import dev.mattsturgeon.Versions
+import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class VersionsTest {
 
@@ -10,6 +13,11 @@ class VersionsTest {
         "1.2.2" to "1.2.2-mc1.20",
         "0.4.4.1" to "0.4.4.1-mc1.17",
         "0.2.2" to "0.2.2-mc1.18.1",
+    )
+
+    private val extras = mapOf(
+        "1.9.4" to "1.9.4-blahblah9",
+        "6.gg.4" to "6.gg.4-1.2.3456",
     )
 
     @TestFactory
@@ -23,6 +31,35 @@ class VersionsTest {
     fun `Gets correct version`() = expectations.map { (version, tag) ->
         dynamicTest("versions[$tag] == $version") {
             assertEquals(version, Versions.versions[tag])
+        }
+    }
+
+    @TestFactory
+    fun `Strip tag suffix`(): List<DynamicTest> {
+        return (expectations + extras).map { (version, tag) ->
+            dynamicTest("stripSuffix($tag) == $version") {
+                assertEquals(version, Versions.stripSuffix(tag))
+            }
+        }
+    }
+
+    @TestFactory
+    fun `Identify old format`(): List<DynamicTest> {
+        return (expectations + extras).filterNot { (_, tag) ->
+            tag == "1.2.3"
+        }.map { (_, tag) ->
+            dynamicTest("isOldFormat($tag) is true") {
+                assertTrue(Versions.isOldFormat(tag))
+            }
+        }
+    }
+
+    @TestFactory
+    fun `Identify new format`(): List<DynamicTest> {
+        return (expectations + extras).map { (version, _) ->
+            dynamicTest("isOldFormat($version) is false") {
+                assertFalse(Versions.isOldFormat(version))
+            }
         }
     }
 }
