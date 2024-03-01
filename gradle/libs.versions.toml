@@ -1,0 +1,15 @@
+[versions]
+jvm = "17"
+kotlin = "1.9.21"
+clikt = "4.2.2"
+json = "1.6.3"
+jgit = "6.8.0.202311291450-r"
+github = "1.319"
+
+[libraries]
+clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
+json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "json" }
+jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgit" }
+github = { module = "org.kohsuke:github-api", version.ref = "github" }
+
+ktest = { module = "org.jetbrains.kotlin:kotlin-test" }
