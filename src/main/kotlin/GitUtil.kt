@@ -23,7 +23,7 @@ object GitUtil {
         return git
     }
 
-    private fun cloneOrOpen(uri:String): Git {
+    private fun cloneOrOpen(uri: String): Git {
         val repoDir = File("build").resolve(uri.substringAfterLast('/'))
         repoDir.parentFile.mkdirs()
 
