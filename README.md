@@ -206,6 +206,8 @@ Once created (and verified locally), push the new tags up to GitHub. `push_new_t
 #### Sanity checks
 Browsing GitHub, the new tags should be shown with the appropriate "created at" date. If you signed them, they should also have a green checkmark ✅.
 
+![image](https://github.com/MattSturgeon/freecam-retagger/assets/5046562/b870a603-7d9d-4ed9-907a-cfba0cbf4eca)
+
 ### Migrate the releases
 
 This step uses the GitHub CLI to update all of the releases. This will run 56 commands, one at a time, and sleep for one second after each (to avoid hitting ratelimits).
