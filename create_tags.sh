@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 echo "Creating v-prefixed signed new-format tags"
 
 read -p "Would you like to enable GPG signing first? [Y/n]: " -n 1 -r

@@ -224,6 +224,20 @@ Browsing GitHub, the new tags should be shown with the appropriate "created at" 
 
 </details>
 
+### Backport tags
+
+In addition to the release tags we just created, we can also create "backport" tags. These will reference the specific commit targeting a given Minecraft version.
+
+I've picked out commits for the last few releases and written `create_backport_tags.sh` and `push_new_backport_tags.sh` respectively.
+
+These aren't required for migrating the Releases, however they will be useful as historical references.
+
+Having these as annotated tags (signed, authored, dated, with a message) may be overkill, tbh. Annotated tags are great for important tags like releases; but when you just want to have a named ref pointing to a specific commit, lightweight tags are completely adequate.
+
+Unlike annotated tags, lightweight tags have _zero_ metadata. No committer, no date, no GPG signature, nothing. It's just an entry in `refs/tags/` pointing to some commit.
+
+If you want lightweight tags for the backports, don't run `create_backport_tags.sh`.
+
 ### Migrate the releases
 
 This step uses the GitHub CLI to update all of the releases. This will run 56 commands, one at a time, and sleep for one second after each (to avoid hitting ratelimits).
