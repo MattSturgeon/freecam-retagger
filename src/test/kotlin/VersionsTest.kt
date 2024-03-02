@@ -44,10 +44,17 @@ class VersionsTest {
     }
 
     @TestFactory
+    fun `Re-format correctly`(): List<DynamicTest> {
+        return (expectations + extras).map { (version, tag) ->
+            dynamicTest("toNewFormat($tag) == v$version") {
+                assertEquals("v$version", Versions.toNewFormat(tag))
+            }
+        }
+    }
+
+    @TestFactory
     fun `Identify old format`(): List<DynamicTest> {
-        return (expectations + extras).filterNot { (_, tag) ->
-            tag == "1.2.3"
-        }.map { (_, tag) ->
+        return (expectations + extras).map { (_, tag) ->
             dynamicTest("isOldFormat($tag) is true") {
                 assertTrue(Versions.isOldFormat(tag))
             }
@@ -57,6 +64,8 @@ class VersionsTest {
     @TestFactory
     fun `Identify new format`(): List<DynamicTest> {
         return (expectations + extras).map { (version, _) ->
+            "v$version"
+        }.map { version ->
             dynamicTest("isOldFormat($version) is false") {
                 assertFalse(Versions.isOldFormat(version))
             }

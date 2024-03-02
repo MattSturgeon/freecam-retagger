@@ -6,9 +6,9 @@ object GitHubUtil {
 
     fun migrateReleaseTags(release: GHRelease) {
         val old = release.tagName
-        val new = Versions.stripSuffix(old)
+        val new = Versions.toNewFormat(old)
 
-        if (!Versions.isOldFormat(old)) {
+        if (old == new) {
             println("""Ignoring already migrated release "$old".""")
             return
         }
@@ -17,7 +17,7 @@ object GitHubUtil {
 
         // Sanity check before doing anything
         if (!App.tags.containsKey(new)) {
-            println("""Error: new tag "$new" does not exist yet!""")
+            println("""Error: new tag "$new" does not exist on remote yet!""")
             return
         }
 

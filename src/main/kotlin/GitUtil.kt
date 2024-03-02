@@ -132,11 +132,10 @@ fun Git.createNewFormatTag(release: GHRelease) {
 
     if (!Versions.isOldFormat(release.tagName)) {
         println("""  - Already new format""")
-        // FIXME this won't replace 1.2.3 with an annotated tag
         return // old
     }
 
-    val version = Versions.stripSuffix(release.tagName)
+    val version = Versions.toNewFormat(release.tagName)
     println("""  - New name will be "$version".""")
 
     // Get the commit to be tagged
@@ -157,7 +156,7 @@ fun Git.createNewFormatTag(release: GHRelease) {
             name = version // Tag name
             objectId = commit // Tag points to commit
 
-            message = "Version $version" // Annotated tag
+            message = "Version ${version.removePrefix("v")}" // Annotated tag
             tagger = commit.committerIdent // Re-use committer and time info from commit
 
             setSigned(false) //TODO GPG sign
@@ -189,10 +188,11 @@ fun Git.genNewTagCommand(release: GHRelease, sign: Boolean): String {
 
     val commit = getCommit(release.tagName)!!
     val version = Versions.stripSuffix(release.tagName)
+    val newTag = Versions.toNewFormat(release.tagName)
     val message = "Version $version"
     val date = fmt.format(release.createdAt)
 
-    return """GIT_COMMITTER_DATE="$date" git tag -a${if (sign) " -s" else ""} -m "$message" v$version ${commit.name}"""
+    return """GIT_COMMITTER_DATE="$date" git tag -a${if (sign) " -s" else ""} -m "$message" $newTag ${commit.name}"""
 }
 
 fun Git.listOldTags() = tagList().call().filter { Versions.isOldFormat(it.name.substringAfterLast('/')) }

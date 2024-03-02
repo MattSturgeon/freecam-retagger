@@ -24,7 +24,12 @@ object Versions {
     fun stripSuffix(tag: String) = tag.substringBefore('-')
 
     /**
+     * Convert an old-format to new format
+     */
+    fun toNewFormat(tag: String) = "v" + stripSuffix(tag).removePrefix("v")
+
+    /**
      * Identify old vs new format tags
      */
-    fun isOldFormat(tag: String) = "" != tag.substringAfter('-', "")
+    fun isOldFormat(tag: String) = tag != toNewFormat(tag)
 }
