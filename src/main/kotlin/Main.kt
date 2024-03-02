@@ -28,10 +28,6 @@ object App : CliktCommand() {
         .help("Don't make any write requests")
         .flag()
 
-//    private val genTagCommands by option("--gen-tag-commands")
-//        .help("Alternative to --create-tags, this will print commands that can be used with git CLI")
-//        .flag()
-
     private val all by option("-a", "--all")
         .help("Run all actions")
         .flag()
@@ -90,20 +86,6 @@ object App : CliktCommand() {
     }
 
     override fun run() {
-//        if (genTagCommands) {
-//            listOf("v", "").forEach { prefix ->
-//                val file = File("update_release_tags_$prefix.sh")
-//                file.printWriter().use { out ->
-//                    out.println("#!/usr/bin/env sh")
-//                    out.println("echo \"Updating release tags ${if (prefix.isNotEmpty()) "(with prefix)" else ""}\"")
-//                    releases.values.map { release ->
-//                        git.genUpdateReleaseCommands(release, prefix)
-//                    }.forEach(out::println)
-//                    out.println("echo \"Done\"")
-//                }
-//            }
-//            return
-//        }
         if (all || createNewTags) {
             println("Creating new format tags")
             // TODO consider using GH API to checkout?
