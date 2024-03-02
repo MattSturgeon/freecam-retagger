@@ -90,6 +90,8 @@ You can get a full list of tags (including the 184 old ones) using `git tag --li
 
 You should have 47 tags starting with `"v"`:
 
+<details><summary>Expected output</summary>
+
 ```shell
 $ git tag --list | grep -e "^v" | wc --lines
 47
@@ -144,10 +146,14 @@ v1.2.2
 v1.2.3
 ```
 
+</details>
+
 You should be able to run `git show --no-patch --show-signature <tag>` for any of the new-format tags and see something like this:
 
 _Note:_ you'll only have a PGP signature if you signed your tags. If it's missing you can re-run `create_tags.sh` after correcting your GPG setup.
 
+<details><summary>Expected output</summary>
+  
 ```shell
 $ git show --no-patch --show-signature v1.2.3
 tag v1.2.3
@@ -190,6 +196,8 @@ Date:   Sun Feb 4 21:26:10 2024 -0500
     Bump version and patch changelog
 ```
 
+</details>
+
 Note how the tag date broardly matches the commit date\*. Note the PGP signature. Note the commit still shows the old-format tags in addition to the new one.
 
 You should spot check a few tags before continuing.
@@ -206,7 +214,11 @@ Once created (and verified locally), push the new tags up to GitHub. `push_new_t
 #### Sanity checks
 Browsing GitHub, the new tags should be shown with the appropriate "created at" date. If you signed them, they should also have a green checkmark ✅.
 
+<details><summary>Example Screenshot</summary>
+  
 ![image](https://github.com/MattSturgeon/freecam-retagger/assets/5046562/b870a603-7d9d-4ed9-907a-cfba0cbf4eca)
+
+</details>
 
 ### Migrate the releases
 
@@ -220,6 +232,8 @@ I'll be the slowest step, probably taking around one or two minutes.
 #### Sanity checks
 
 You can check releases using `gh release list`, you should see something like:
+
+<details><summary>Expected output</summary>
 
 ```shell
 $ gh releases list --limit 50
@@ -272,6 +286,8 @@ Freecam 0.2.4            v0.2.4    about 2 years ago
 Freecam 0.2.3            v0.2.3    about 2 years ago
 Freecam 0.2.2            v0.2.2    about 2 years ago
 ```
+
+</details>
 
 If something went wrong (e.g. ratelimit), you'll have to manually edit `update_release_tags.sh` and **remove lines** related to successfully migrated releases before running again.
 
