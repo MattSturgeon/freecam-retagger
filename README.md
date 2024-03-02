@@ -1,5 +1,19 @@
 # Retagging Freecam
 
+## Contents
+
+- [Requirements](#requirements)
+  - [Linux](#linux)
+  - [Windows](#windows)
+  - [GPG](#gpg)
+- [Usage](#usage)
+  - [Enable GPG signing](#enable-gpg-signing)
+  - [Working Directory](#working-directory)
+  - [Create new tags](#create-new-tags)
+  - [Push the new tags](#push-the-new-tags)
+  - [Migrate the releases](#migrate-the-releases)
+  - [Delete the old tags](#delete-the-old-tags)
+
 ## Requirements
 
 - Bash
