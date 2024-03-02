@@ -79,6 +79,8 @@ The scripts assume they are being run from the Freecam git repo and that GitHub 
 ### Create new tags
 The first step is to create the new tags. `create_tags.sh` will create 47 new tags, in the format `v1.2.3`, each backdated to when the version was _released_.
 
+Can be re-run and will re-create new-format tags.
+
 ```shell
 ./create_tags.sh
 ```
@@ -143,6 +145,8 @@ v1.2.3
 ```
 
 You should be able to run `git show --no-patch --show-signature <tag>` for any of the new-format tags and see something like this:
+
+_Note:_ you'll only have a PGP signature if you signed your tags. If it's missing you can re-run `create_tags.sh` after correcting your GPG setup.
 
 ```shell
 $ git show --no-patch --show-signature v1.2.3
