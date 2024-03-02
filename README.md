@@ -1,5 +1,9 @@
 # Retagging Freecam
 
+Single-use tools to migrate [Freecam]()'s existing release tags over to the new `v1.2.3` format. Scripts were mostly generated from functions defined in the `kotlin` branch, once I realised that was easier than writing dedicated tools in kotlin.
+
+This repo will be archived once it has served its purpose. It may also become private eventually.
+
 ## Contents
 
 - [Requirements](#requirements)
